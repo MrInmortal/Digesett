@@ -1,0 +1,79 @@
+﻿@page "/AcercaDe"
+
+<PageTitle>Acerca de Mi</PageTitle>
+
+<h2 style="text-align: center; margin-bottom: 30px;">Equipo</h2>
+
+<!-- Carrusel de personas -->
+<div id="personasSlider" style="display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; justify-content: center;">
+    <!-- Persona 1: Joel -->
+    <div style="flex: 0 0 auto; text-align: center; width: 350px; height: 400px; box-sizing: border-box; padding: 20px; border-radius: 10px; background-color: #f9f9f9; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <img src="https://imgur.com/nU2MMup.jpg"
+             style="width: 180px; height: 180px; object-fit: cover; border-radius: 50%; margin-bottom: 15px; border: 3px solid #1E90FF;"
+             alt="Foto de Joel" />
+        <h3 style="color: #1E90FF;">Joel De Jesús Oseliz</h3>
+        <p><strong>Correo ITLA:</strong> <a href="mailto:20231132@itla.edu.do" style="color: #333;">20231132@itla.edu.do</a></p>
+        <p>
+            <a href="https://wa.me/18099906126" target="_blank" style="text-decoration: none; color: #25D366; font-size: 18px;">WhatsApp </a> |
+            <a href="https://t.me/joeldejesusoselizreynoso" target="_blank" style="text-decoration: none; color: #0088cc; font-size: 18px;">Telegram </a>
+        </p>
+        <p><strong>Teléfono:</strong> <a href="tel:+18099906126" style="color: #333;">+1 (809) 990-6126</a></p>
+    </div>
+
+    <!-- Persona 2: Emill -->
+    <div style="flex: 0 0 auto; text-align: center; width: 400px; height: 400px; box-sizing: border-box; padding: 20px; border-radius: 10px; background-color: #f9f9f9; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <img src="https://i.imgur.com/2Dx3l6l.jpg"
+             style="width: 180px; height: 180px; object-fit: cover; border-radius: 50%; margin-bottom: 15px; border: 3px solid #1E90FF;"
+             alt="Foto de Emill" />
+        <h3 style="color: #1E90FF;">Emill Peralta Encarnación</h3>
+        <p><strong>Correo ITLA:</strong> <a href="mailto:20231151@itla.edu.do" style="color: #333;">20231151@itla.edu.do</a></p>
+        <p>
+            <a href="https://wa.me/8097693668" target="_blank" style="text-decoration: none; color: #25D366; font-size: 18px;">WhatsApp </a> |
+            <a href="https://t.me/EmillPeralta" target="_blank" style="text-decoration: none; color: #0088cc; font-size: 18px;">Telegram </a>
+        </p>
+        <p><strong>Teléfono:</strong> <a href="tel:+18097693668" style="color: #333;">+1 (809) 769-3665</a></p>
+    </div>
+
+    <!-- Persona 3: Jordi -->
+    <div style="flex: 0 0 auto; text-align: center; width: 350px; height: 400px; box-sizing: border-box; padding: 20px; border-radius: 10px; background-color: #f9f9f9; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <img src="https://imgur.com/SLmcRgr.jpg"
+             style="width: 180px; height: 180px; object-fit: cover; border-radius: 50%; margin-bottom: 15px; border: 3px solid #1E90FF;"
+             alt="Foto de Jordi" />
+        <h3 style="color: #1E90FF;">Jordi Jose Mena Rosario</h3>
+        <p><strong>Correo ITLA:</strong> <a href="mailto:20231186@itla.edu.do" style="color: #333;">20231186@itla.edu.do</a></p>
+        <p>
+            <a href="https://wa.me/18498654604" target="_blank" style="text-decoration: none; color: #25D366; font-size: 18px;">WhatsApp </a> |
+            <a href="https://t.me/JordiMenaRosario" target="_blank" style="text-decoration: none; color: #0088cc; font-size: 18px;">Telegram </a>
+        </p>
+        <p><strong>Teléfono:</strong> <a href="tel:+18498654604" style="color: #333;">+1 (849) 865-4604</a></p>
+    </div>
+</div>
+
+<!-- Estilos de carrusel -->
+<style>
+    #personasSlider {
+        display: flex;
+        overflow-x: auto;
+        gap: 20px;
+        padding-bottom: 20px;
+        justify-content: center;
+        scroll-snap-type: x mandatory;
+    }
+
+        #personasSlider > div {
+            scroll-snap-align: center;
+        }
+
+        #personasSlider::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        #personasSlider::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 10px;
+        }
+
+        #personasSlider::-webkit-scrollbar-track {
+            background: transparent;
+        }
+</style>

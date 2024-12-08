@@ -1,0 +1,203 @@
+﻿@page "/GestionarMultas"
+@using DIGESETTApp.Data
+@using DIGESETTApp.Models
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext DbContext
+@inject NavigationManager Navigation
+
+<PageTitle>Gestionar Multas</PageTitle>
+
+<h2>Gestionar Multas</h2>
+
+<EditForm Model="@multasSearchModel" OnValidSubmit="BuscarMultas">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="buscarNombreCedula">Buscar por Nombre o Cédula</label>
+        <InputText id="buscarNombreCedula" @bind-Value="multasSearchModel.Buscar" class="form-control" />
+    </div>
+    <div>
+        <button type="submit" class="btn btn-primary">Buscar</button>
+    </div>
+</EditForm>
+
+@if (multas != null && multas.Any())
+{
+    <ul class="multas-list">
+        @foreach (var multa in multas)
+        {
+            <li class="multa-item">
+                <span>@multa.Nombre</span> - <span>@multa.Monto</span>
+                <div class="action-buttons">
+                    <button @onclick="() => MarcarComoCobrado(multa.Id)" class="btn btn-success">Cobrado</button>
+                    <button @onclick="() => MarcarComoPerdonado(multa.Id)" class="btn btn-warning">Perdonado</button>
+                    <button @onclick="() => EliminarMulta(multa.Id)" class="btn btn-danger">Eliminar</button>
+                </div>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No se encontraron multas.</p>
+}
+
+@code {
+    private MultasSearchModel multasSearchModel = new MultasSearchModel();
+    private List<Multa> multas = new List<Multa>();
+
+    private void BuscarMultas()
+    {
+        multas = ObtenerMultas(multasSearchModel.Buscar);
+    }
+
+    private List<Multa> ObtenerMultas(string buscar)
+    {
+        // Aquí debes conectar con tu base de datos real para obtener las multas.
+        return new List<Multa>
+        {
+            new Multa { Id = 1, Nombre = "Juan Pérez", Monto = 500 },
+            new Multa { Id = 2, Nombre = "María López", Monto = 300 }
+        };
+    }
+
+    private void MarcarComoCobrado(int id)
+    {
+        // Lógica para marcar como cobrado
+        Console.WriteLine($"Multa {id} marcada como cobrada");
+    }
+
+    private void MarcarComoPerdonado(int id)
+    {
+        // Lógica para marcar como perdonado
+        Console.WriteLine($"Multa {id} marcada como perdonada");
+    }
+
+    private void EliminarMulta(int id)
+    {
+        // Lógica para eliminar multa
+        Console.WriteLine($"Multa {id} eliminada");
+    }
+
+    public class MultasSearchModel
+    {
+        public string Buscar { get; set; }
+    }
+
+    public class Multa
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; }
+        public decimal Monto { get; set; }
+    }
+}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f6f9;
+    }
+
+    h2 {
+        text-align: center;
+        color: #0056b3;
+        margin-bottom: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        font-size: 14px;
+        border: 1px solid #d0d0d0;
+        border-radius: 5px;
+    }
+
+        .form-control:focus {
+            border-color: #0056b3;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 86, 179, 0.4);
+        }
+
+    button.btn-primary {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: bold;
+        color: white;
+        background-color: #0056b3;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        button.btn-primary:hover {
+            background-color: #003d82;
+        }
+
+    button.btn-success, button.btn-warning, button.btn-danger {
+        margin-left: 10px;
+        padding: 8px 12px;
+        font-size: 14px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button.btn-success {
+        background-color: #28a745;
+    }
+
+    button.btn-warning {
+        background-color: #ffc107;
+    }
+
+    button.btn-danger {
+        background-color: #dc3545;
+    }
+
+    button.btn-success:hover {
+        background-color: #218838;
+    }
+
+    button.btn-warning:hover {
+        background-color: #e0a800;
+    }
+
+    button.btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    .multas-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .multa-item {
+        margin-bottom: 20px;
+        padding: 10px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+    }
+</style>

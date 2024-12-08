@@ -1,0 +1,236 @@
+﻿@page "/GestionarAgentes"
+
+<PageTitle>Gestionar Agentes</PageTitle>
+
+<h2>Gestionar Agentes</h2>
+
+<!-- Formulario de agregar/editar agente -->
+<EditForm Model="@agenteModel" OnValidSubmit="GuardarAgente">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="nombre">Nombre Completo</label>
+        <InputText id="nombre" @bind-Value="agenteModel.Nombre" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="numero">Número</label>
+        <InputText id="numero" @bind-Value="agenteModel.Numero" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="correo">Correo</label>
+        <InputText id="correo" @bind-Value="agenteModel.Correo" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="fechaNacimiento">Fecha de Nacimiento</label>
+        <InputDate id="fechaNacimiento" @bind-Value="agenteModel.FechaNacimiento" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="nota">Nota</label>
+        <InputTextArea id="nota" @bind-Value="agenteModel.Nota" class="form-control" />
+    </div>
+
+    <div>
+        <button type="submit" class="btn btn-primary">Guardar Agente</button>
+    </div>
+</EditForm>
+
+<!-- Buscador de agentes -->
+<div class="form-group">
+    <label for="buscarAgentes">Buscar Agentes</label>
+    <InputText id="buscarAgentes" @bind-Value="searchTerm" class="form-control" placeholder="Buscar por nombre o número" />
+</div>
+
+@if (agentes != null && agentes.Any())
+{
+    <ul>
+        @foreach (var agente in agentes)
+        {
+            <li>
+                @agente.Nombre - @agente.Numero
+                <button @onclick="() => EditarAgente(agente)" class="btn btn-warning">Editar</button>
+                <button @onclick="() => EliminarAgente(agente.Id)" class="btn btn-danger">Eliminar</button>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No se encontraron agentes.</p>
+}
+
+@code {
+    private AgenteModel agenteModel = new AgenteModel();
+    private List<Agente> agentes = new List<Agente>();
+    private string searchTerm = string.Empty;
+
+    private void GuardarAgente()
+    {
+        if (agenteModel.Id == 0)
+        {
+            // Si es un nuevo agente
+            agenteModel.Id = agentes.Count + 1; // Simulando ID
+            agentes.Add(new Agente
+                {
+                    Id = agenteModel.Id,
+                    Nombre = agenteModel.Nombre,
+                    Numero = agenteModel.Numero,
+                    Correo = agenteModel.Correo,
+                    FechaNacimiento = agenteModel.FechaNacimiento,
+                    Nota = agenteModel.Nota
+                });
+        }
+        else
+        {
+            // Si es un agente ya existente (actualizar)
+            var agente = agentes.FirstOrDefault(a => a.Id == agenteModel.Id);
+            if (agente != null)
+            {
+                agente.Nombre = agenteModel.Nombre;
+                agente.Numero = agenteModel.Numero;
+                agente.Correo = agenteModel.Correo;
+                agente.FechaNacimiento = agenteModel.FechaNacimiento;
+                agente.Nota = agenteModel.Nota;
+            }
+        }
+
+        agenteModel = new AgenteModel(); // Limpiar el formulario
+    }
+
+    private void EditarAgente(Agente agente)
+    {
+        agenteModel = new AgenteModel
+            {
+                Id = agente.Id,
+                Nombre = agente.Nombre,
+                Numero = agente.Numero,
+                Correo = agente.Correo,
+                FechaNacimiento = agente.FechaNacimiento,
+                Nota = agente.Nota
+            };
+    }
+
+    private void EliminarAgente(int id)
+    {
+        var agente = agentes.FirstOrDefault(a => a.Id == id);
+        if (agente != null)
+        {
+            agentes.Remove(agente);
+        }
+    }
+
+    public class AgenteModel
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; }
+        public string Numero { get; set; }
+        public string Correo { get; set; }
+        public DateTime FechaNacimiento { get; set; }
+        public string Nota { get; set; }
+    }
+
+    public class Agente
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; }
+        public string Numero { get; set; }
+        public string Correo { get; set; }
+        public DateTime FechaNacimiento { get; set; }
+        public string Nota { get; set; }
+    }
+}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f6f9;
+    }
+
+    h2 {
+        text-align: center;
+        color: #0056b3;
+        margin-bottom: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        font-size: 14px;
+        border: 1px solid #d0d0d0;
+        border-radius: 5px;
+    }
+
+        .form-control:focus {
+            border-color: #0056b3;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 86, 179, 0.4);
+        }
+
+    button.btn-primary {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: bold;
+        color: white;
+        background-color: #0056b3;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        button.btn-primary:hover {
+            background-color: #003d82;
+        }
+
+    button.btn-danger, button.btn-warning {
+        margin-left: 10px;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    button.btn-danger {
+        background-color: #dc3545;
+    }
+
+    button.btn-warning {
+        background-color: #ffc107;
+    }
+
+    button.btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    button.btn-warning:hover {
+        background-color: #e0a800;
+    }
+
+    .agentes-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .agente-item {
+        margin-bottom: 20px;
+        padding: 10px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+</style>

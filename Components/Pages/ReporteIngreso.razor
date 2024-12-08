@@ -1,0 +1,77 @@
+﻿@page "/ReporteIngresos"
+@using DIGESETTApp.Models
+@using DIGESETTApp.Data
+
+<PageTitle>Reporte de Ingresos</PageTitle>
+
+<h2>Reporte de Ingresos</h2>
+
+<p>A continuación se muestra un resumen de los ingresos por multas y pagos realizados.</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Nombre</th>
+            <th>Monto</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ingreso in ingresos)
+        {
+            <tr>
+                <td>@ingreso.Fecha</td>
+                <td>@ingreso.Nombre</td>
+                <td>@ingreso.Monto</td>
+                <td>@ingreso.Estado</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<Ingreso> ingresos = new List<Ingreso>
+    {
+        new Ingreso { Fecha = DateTime.Now, Nombre = "Juan Pérez", Monto = 500, Estado = "Pagado" },
+        new Ingreso { Fecha = DateTime.Now, Nombre = "María López", Monto = 300, Estado = "Pendiente" }
+    };
+
+    public class Ingreso
+    {
+        public DateTime Fecha { get; set; }
+        public string Nombre { get; set; }
+        public decimal Monto { get; set; }
+        public string Estado { get; set; }
+    }
+}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f6f9;
+    }
+
+    h2 {
+        text-align: center;
+        color: #0056b3;
+        margin-bottom: 30px;
+    }
+
+    .table {
+        width: 100%;
+        margin-top: 30px;
+        border-collapse: collapse;
+    }
+
+    .table th, .table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table th {
+        background-color: #f8f9fa;
+        color: #343a40;
+    }
+</style>

@@ -1,0 +1,251 @@
+@page "/RegistrarMulta"
+@using DIGESETTApp.Data
+@using DIGESETTApp.Models
+@using Microsoft.EntityFrameworkCore
+@using System.Text.RegularExpressions
+@inject AppDbContext DbContext
+@inject NavigationManager Navigation
+
+<h3>Registrar Multa</h3>
+
+<EditForm Model="@nuevaMulta" OnValidSubmit="@RegistrarNuevaMulta" FormName="RegistrarMultaForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="cedula">Cédula:</label>
+        <InputText id="cedula" @bind-Value="nuevaMulta.Cedula" class="form-control" placeholder="Ingrese la cédula del infractor"
+                   @oninput="ValidarCedula" style="@cedulaInputStyle" />
+        <ValidationMessage For="@(() => nuevaMulta.Cedula)" />
+    </div>
+
+    <div class="form-group">
+        <label for="nombre">Nombre:</label>
+        <InputText id="nombre" @bind-Value="nuevaMulta.Nombre" class="form-control" placeholder="Ingrese el nombre completo" />
+        <ValidationMessage For="@(() => nuevaMulta.Nombre)" />
+    </div>
+
+    <div class="form-group">
+        <label for="concepto">Concepto:</label>
+        <InputSelect id="concepto" @bind-Value="nuevaMulta.ConceptoId" class="form-control">
+            <option value="">Seleccione un concepto</option>
+            @foreach (var concepto in conceptosMultas)
+            {
+                <option value="@concepto.Id">@concepto.Nombre</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="@(() => nuevaMulta.ConceptoId)" />
+    </div>
+
+    <div class="form-group">
+        <label for="descripcion">Descripción:</label>
+        <InputTextArea id="descripcion" @bind-Value="nuevaMulta.Descripcion" class="form-control" placeholder="Ingrese una descripción" />
+        <ValidationMessage For="@(() => nuevaMulta.Descripcion)" />
+    </div>
+
+    <div class="form-group">
+        <label for="coordenadas">Coordenadas:</label>
+        <InputText id="coordenadas" @bind-Value="nuevaMulta.Coordenadas" class="form-control" placeholder="Ejemplo: 18.4861, -69.9312" />
+        <ValidationMessage For="@(() => nuevaMulta.Coordenadas)" />
+    </div>
+
+    <div class="form-group">
+        <label for="foto">Foto:</label>
+        <InputFile id="foto" OnChange="@CargarFoto" />
+        @if (!string.IsNullOrEmpty(rutaFoto))
+        {
+            <p class="text-success">Foto cargada correctamente.</p>
+        }
+    </div>
+
+    <button type="submit" class="btn btn-primary">Registrar</button>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(mensaje))
+{
+    <p class="text-success">@mensaje</p>
+}
+
+@if (!string.IsNullOrEmpty(error))
+{
+    <p class="text-danger">@error</p>
+}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f6f9;
+        margin: 0;
+        padding: 0;
+    }
+
+    h3 {
+        text-align: center;
+        color: #0056b3;
+        margin-bottom: 30px;
+    }
+
+    form {
+        max-width: 600px;
+        margin: 60px auto;
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        font-size: 14px;
+        border: 1px solid #d0d0d0;
+        border-radius: 5px;
+    }
+
+        .form-control:focus {
+            border-color: #0056b3;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 86, 179, 0.4);
+        }
+
+    button.btn-primary {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: bold;
+        color: white;
+        background-color: #0056b3;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        button.btn-primary:hover {
+            background-color: #003d82;
+        }
+
+    .text-success {
+        text-align: center;
+        color: #28a745;
+        margin-top: 20px;
+    }
+
+    .text-danger {
+        text-align: center;
+        color: #dc3545;
+        margin-top: 20px;
+    }
+</style>
+
+
+@code {
+    private Multa nuevaMulta = new();
+    private List<ConceptoMulta> conceptosMultas = new();
+    private string mensaje = string.Empty;
+    private string error = string.Empty;
+    private string rutaFoto = string.Empty;
+    private string cedulaInputStyle = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+{
+    try
+    {
+        // Intentar cargar los conceptos de la base de datos
+        conceptosMultas = await DbContext.ConceptosMultas.ToListAsync();
+
+        // Si no hay conceptos en la base de datos, usar valores predefinidos
+        if (conceptosMultas == null || !conceptosMultas.Any())
+        {
+            CargarConceptosPredeterminados();
+        }
+    }
+    catch (Exception ex)
+    {
+        // En caso de error, usar valores predefinidos y registrar el error
+        CargarConceptosPredeterminados();
+        error = $"Error al cargar los conceptos: {ex.Message}";
+    }
+}
+
+private void CargarConceptosPredeterminados()
+{
+    // Conceptos de multas dominicanas predefinidos
+    conceptosMultas = new List<ConceptoMulta>
+    {
+        new ConceptoMulta { Id = 1, Nombre = "Exceso de velocidad" },
+        new ConceptoMulta { Id = 2, Nombre = "No usar el cinturón de seguridad" },
+        new ConceptoMulta { Id = 3, Nombre = "Estacionamiento indebido" },
+        new ConceptoMulta { Id = 4, Nombre = "No respetar semáforo en rojo" },
+        new ConceptoMulta { Id = 5, Nombre = "Conducir sin licencia" },
+        new ConceptoMulta { Id = 6, Nombre = "Uso de celular mientras conduce" }
+    };
+}
+
+
+    private void ValidarCedula(ChangeEventArgs e)
+    {
+        var cedula = e.Value?.ToString() ?? string.Empty;
+        cedulaInputStyle = Regex.IsMatch(cedula, @"^\d{3}-\d{7}-\d{1}$") ? "valid-input" : "invalid-input";
+    }
+
+    private async Task CargarFoto(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            var archivo = e.File;
+            var carpetaDestino = Path.Combine("wwwroot", "images", "multas");
+            Directory.CreateDirectory(carpetaDestino);
+
+            var rutaArchivo = Path.Combine(carpetaDestino, archivo.Name);
+            using var stream = new FileStream(rutaArchivo, FileMode.Create);
+            await archivo.OpenReadStream().CopyToAsync(stream);
+
+            rutaFoto = $"images/multas/{archivo.Name}";
+        }
+        catch (Exception ex)
+        {
+            error = $"Error al cargar la foto: {ex.Message}";
+        }
+    }
+
+    private async Task RegistrarNuevaMulta()
+    {
+        if (string.IsNullOrEmpty(rutaFoto))
+        {
+            error = "Debe cargar una foto antes de registrar la multa.";
+            return;
+        }
+
+        try
+        {
+            nuevaMulta.Foto = rutaFoto;
+            nuevaMulta.Fecha = DateTime.Now;
+
+            DbContext.Multas.Add(nuevaMulta);
+            await DbContext.SaveChangesAsync();
+
+            mensaje = "Multa registrada correctamente.";
+            error = string.Empty;
+
+            nuevaMulta = new Multa();
+            rutaFoto = string.Empty;
+
+            Navigation.NavigateTo("/ListadoMultas");
+        }
+        catch (Exception ex)
+        {
+            error = $"Error al registrar la multa: {ex.Message}";
+        }
+    }
+}

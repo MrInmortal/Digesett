@@ -1,0 +1,82 @@
+@page "/ListadoMultas"
+@using DIGESETTApp.Data
+@using DIGESETTApp.Models
+@using Microsoft.EntityFrameworkCore;
+@inject AppDbContext DbContext
+@inject NavigationManager Navigation
+
+<h3>Listado de Multas</h3>
+
+<input type="text" @bind="filtro" placeholder="Buscar por cédula o nombre..." class="form-control mb-3" />
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Cédula</th>
+            <th>Nombre</th>
+            <th>Concepto</th>
+            <th>Descripción</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (multasFiltradas != null && multasFiltradas.Any())
+        {
+            foreach (var multa in multasFiltradas)
+            {
+                <tr>
+                    <td>@multa.Cedula</td>
+                    <td>@multa.Nombre</td>
+                    <td>@multa.Concepto.Nombre</td>
+                    <td>@multa.Descripcion</td>
+                    <td>@multa.Fecha.ToString("dd/MM/yyyy")</td>
+                    <td>@(multa.Activa ? "Activa" : "Resuelta")</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6" class="text-center">No se encontraron multas.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<Multa> multasFiltradas = new();
+    private string filtro = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarMultas();
+    }
+
+    private async Task CargarMultas()
+    {
+        var agenteId = 1; // Suponer que el agente en sesión tiene ID 1.
+        var todasLasMultas = await DbContext.Multas
+            .Where(m => m.Activa && m.Concepto != null) // Solo multas activas con concepto.
+            .Include(m => m.Concepto) // Carga relacionada.
+            .ToListAsync();
+
+        multasFiltradas = todasLasMultas.Where(m => m.ConceptoId == agenteId).ToList();
+    }
+
+
+    private void Filtrar()
+    {
+        if (string.IsNullOrEmpty(filtro))
+        {
+            multasFiltradas = multasFiltradas; // Restaura la lista completa si no hay filtro.
+        }
+        else
+        {
+            multasFiltradas = multasFiltradas
+                .Where(m => m.Cedula.Contains(filtro, StringComparison.OrdinalIgnoreCase) ||
+                            m.Nombre.Contains(filtro, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+    }
+}

@@ -1,0 +1,67 @@
+@page "/MapaMultas"
+@using DIGESETTApp.Data
+@using DIGESETTApp.Models
+@using Microsoft.EntityFrameworkCore
+@inject IJSRuntime JSRuntime
+@inject AppDbContext DbContext
+@inject NavigationManager Navigation
+
+<h3 class="page-title">Mapa con Mis Multas</h3>
+
+<div class="map-container">
+    <div id="map" style="height: 100%; width: 100%; border-radius: 10px;"></div>
+</div>
+
+@code {
+    private List<Multa> multas = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Obtener las multas del agente en sesión.
+        var agenteId = 1; // Cambiar por lógica del agente en sesión.
+        multas = await DbContext.Multas
+            .Where(m => m.AgenteId == agenteId && m.Fecha >= DateTime.Now.AddDays(-28)) // Últimas 4 semanas.
+            .ToListAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("initMap", multas.Select(m => new
+            {
+                Lat = m.Latitud,
+                Lng = m.Longitud,
+                Descripcion = m.Descripcion
+            }).ToList());
+        }
+    }
+}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f6f9;
+        margin: 0;
+        padding: 0;
+    }
+
+    .page-title {
+        text-align: center;
+        color: #0056b3;
+        margin-top: 30px;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+
+    .map-container {
+        margin: 20px auto;
+        width: 90%;
+        max-width: 1200px;
+        height: 500px;
+        border-radius: 15px;
+        overflow: hidden;
+        background-color: #ffffff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+</style>

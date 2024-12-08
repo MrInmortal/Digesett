@@ -1,0 +1,106 @@
+﻿@page "/Admin"
+@using DIGESETTApp.Data
+@using DIGESETTApp.Models
+@using Microsoft.EntityFrameworkCore;
+@inject AppDbContext DbContext
+@inject NavigationManager Navigation
+@inject NavigationManager NavigationManager
+
+<PageTitle>Administración</PageTitle>
+
+<h2>Acceso Administrativo</h2>
+
+<EditForm Model="@adminLoginModel" OnValidSubmit="ValidarAccesoAdmin">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="usuario">Usuario</label>
+        <InputText id="usuario" @bind-Value="adminLoginModel.Usuario" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="clave">Clave</label>
+        <InputText id="clave" @bind-Value="adminLoginModel.Clave" type="password" class="form-control" />
+    </div>
+    <div>
+        <button type="submit" class="btn btn-primary">Acceder</button>
+    </div>
+</EditForm>
+
+@code {
+    private AdminLoginModel adminLoginModel = new AdminLoginModel();
+
+    private void ValidarAccesoAdmin()
+    {
+        if (adminLoginModel.Usuario == "adamix" && adminLoginModel.Clave == "estoesfacil")
+        {
+            NavigationManager.NavigateTo("/GestionarMultas");
+        }
+        else
+        {
+            Console.WriteLine("Acceso denegado");
+        }
+    }
+
+    public class AdminLoginModel
+    {
+        public string Usuario { get; set; }
+        public string Clave { get; set; }
+    }
+}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f6f9;
+        margin: 0;
+        padding: 0;
+    }
+
+    h2 {
+        text-align: center;
+        color: #0056b3;
+        margin-bottom: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        font-size: 14px;
+        border: 1px solid #d0d0d0;
+        border-radius: 5px;
+    }
+
+        .form-control:focus {
+            border-color: #0056b3;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 86, 179, 0.4);
+        }
+
+    button.btn-primary {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: bold;
+        color: white;
+        background-color: #0056b3;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        button.btn-primary:hover {
+            background-color: #003d82;
+        }
+</style>
